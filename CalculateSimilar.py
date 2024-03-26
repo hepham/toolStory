@@ -66,7 +66,7 @@ def checkRemoveTextInImage(string1,string2):
     string2=string2.rstrip()
     split_string = re.split(r'[.!?]', string2.rstrip())
     # print(split_string)
-    if(len(string1)>len(string2)*1.5):
+    if(len(string1)>len(string2)*1.25):
         return False
     if(levenshtein_similarity(string1,string2)>0.9):
         return True
