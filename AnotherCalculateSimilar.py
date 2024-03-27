@@ -59,14 +59,15 @@ def mapStringCanvas(listString,stringReferences,listParagraph):
         for stringReference in stringReferences:
             # print("Phai giong tHANG NAY")
             # print(stringReference)
-            mergeString(s,listString,stringReference,0)  
+            mapcheck=[]
+            mergeString(s,listString,stringReference,mapcheck,0)  
             if len(saveString)>0:
                 mapString[s]=saveString
             else:
                 listParagraph.append(s)
     # print(mapString)
     return mapString
-def mergeString(currentString,listStringAddion,stringReference,max):
+def mergeString(currentString,listStringAddion,stringReference,mapCheck,max):
     global saveString
     similarity=levenshtein_similarity(currentString,stringReference)
     if levenshtein_similarity(currentString,stringReference[0:len(currentString)])<0.7:return
@@ -79,9 +80,12 @@ def mergeString(currentString,listStringAddion,stringReference,max):
             # print(f"******************đạt:{currentString}")
             saveString=currentString
     for i in range(0,len(listStringAddion)):
-        text=currentString+listStringAddion[i]
-        # print(text)
-        mergeString(text,listStringAddion,stringReference,max)
+        if(listStringAddion[i] not in mapCheck):
+            text=currentString+listStringAddion[i]
+            # print(text)
+            mapCheck.append(listStringAddion[i])
+            mergeString(text,listStringAddion,stringReference,mapCheck,max)
+            mapCheck.remove(listStringAddion[i])
 def getTextOcr(folderpath):
     path=f"{folderpath}/screenshotText.txt"
     stringOcr=[]
@@ -108,7 +112,7 @@ def getStringAddion(folderpath,listString,listStringCanvas):
     for text in txtFile:
         if text!="screenshotText.txt" and text!="result.txt" and text!="textCrawl0.txt":
             path=f"{folderpath}/{text}"
-            with open(path,"r",encoding="utf-8") as file:
+            with open(path,"r",encoding="utf-8") as file: 
                 for line in file:
                     line=remove_standalone_numbers(line)
                     check=True
@@ -215,11 +219,12 @@ def sortText(folderpath):
             continue
         else:
             # print(f"something wrong:{checkValue>0.8}--{len(s)<len(reference)+10}")
-            # print(f"{lenParagraph}-{lenReference}")
-            # print(f"string:{s} {len(s)}")
-            # print(f"reference:{reference} {checkValue} {len(reference)}")
+            print(f"{lenParagraph}-{lenReference}")
+            print(f"string:{s} {len(s)}")
+            print(f"reference:{reference} {checkValue} {len(reference)}")
             saveString=s
-            mergeString(s,listStringNeedVerified,reference,checkValue)
+            mapcheck=[]
+            mergeString(s,listStringNeedVerified,reference,mapcheck,checkValue)
             # print("++++++++++++++++")
             # print(saveString)
             sorted_dict[indexList[i]]=saveString
@@ -248,4 +253,4 @@ def sortText(folderpath):
     
         
 # ocrCanvas("Cưng Chiều Cô Vợ Quân Nhân full\Chương 3090 Có lẽ tôi không trở về được nữa\canvas")
-# sortText("Cưng Chiều Cô Vợ Quân Nhân full\Chương 3092 Có người thật!")
+sortText("Cưng Chiều Cô Vợ Quân Nhân full\Chương 3134 Chuyện bất ngờ")
